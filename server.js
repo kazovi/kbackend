@@ -17,9 +17,9 @@ app.use(cors({
 app.use(express.json());
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error("MongoDB error:", err));
+// mongoose.connect(process.env.MONGO_URI)
+//   .then(() => console.log("MongoDB connected"))
+//   .catch(err => console.error("MongoDB error:", err));
 
 // Model
 const CustomerDetail = require("./models/CustomerDetail");
@@ -119,7 +119,16 @@ app.get("/", (req, res) => {
 
 
 
-// ✅ START SERVER
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB connected");
+
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+
+  })
+  .catch(err => {
+    console.error("MongoDB connection failed:", err);
+    process.exit(1);
+  });
