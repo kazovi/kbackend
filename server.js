@@ -44,6 +44,74 @@ app.post("/users", async (req, res) => {
   }
 });
 
+
+app.get("/newusers", async (req, res) => {
+  try {
+    const orders = await CustomerDetail
+      .find({ read: "0" })
+      .sort({ createdAt: -1 });
+
+  res.status(200).json(orders);
+  } 
+    catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Failed to fetch orders",
+      error: error.message,
+    });
+  }
+});
+
+
+
+app.put("/updateusers", async (req, res) => {
+  const { vehicle } = req.body; 
+  try {
+    // Find the order by vehicle and read = "0" (new order)
+    const updatedOrder = await CustomerDetail.findOneAndUpdate(
+      { vehicle: vehicle, read: "0" },
+      { read: "1"},    
+      { new: true }                   
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found or already read" });
+    }
+
+    res.status(200).json(updatedOrder);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Failed to update order",
+      error: error.message,
+    });
+  }
+});
+
+
+
+app.get("/readusers", async (req, res) => {
+  try {
+    const orders = await CustomerDetail
+      .find({ read: "1" })
+      .sort({ createdAt: -1 });
+
+  res.status(200).json(orders);
+
+
+  } 
+    catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Failed to fetch orders",
+      error: error.message,
+    });
+  }
+});
+
+
+
+
 app.get("/", (req, res) => {
   // handle the route
   res.send("Hello, world!"); // example response
